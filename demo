@@ -4,7 +4,7 @@ set -euo pipefail
 AR_VERSION=11.10.1
 RF_VERSION=0.10.52
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-ACTION="${1:-present}"
+ACTION="${1:-run}"
 
 if [[ "$ACTION" == "setup" ]]; then
   npx --yes "agent-relay@$AR_VERSION" cloud whoami >/dev/null 2>&1 || \
@@ -15,8 +15,8 @@ if [[ "$ACTION" == "setup" ]]; then
 fi
 
 case "$ACTION" in
-  present|run|doctor) ;;
-  *) echo "Usage: ./demo [setup|present|run|doctor]" >&2; exit 2 ;;
+  run|prep|show|watch|clean|doctor) ;;
+  *) echo "Usage: ./demo [setup|prep|show|watch|run|clean|doctor]" >&2; exit 2 ;;
 esac
 
 if [[ "${RELAYFILE_DEMO_READY:-}" != 1 ]]; then
@@ -41,8 +41,4 @@ AR_BIN_DIR="$(dirname "$(command -v agent-relay)")"
 export RELAYFILE_SDK_ENTRY="$BIN_DIR/../@relayfile/sdk/dist/index.js"
 export AGENT_RELAY_CLOUD_ENTRY="$AR_BIN_DIR/../@agent-relay/cloud/dist/index.js"
 
-if [[ "$ACTION" == "present" ]]; then
-  exec node "$ROOT/lib/run.mjs" --present
-else
-  exec node "$ROOT/lib/run.mjs"
-fi
+exec node "$ROOT/lib/run.mjs" "$ACTION"
