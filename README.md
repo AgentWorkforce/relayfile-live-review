@@ -1,8 +1,8 @@
 # Review the live file. There is no PR yet.
 
-A Claude reviewer in a fresh cloud sandbox rejects an unsafe, uncommitted
-file on your laptop. You fix it. The same reviewer approves it live. Relayfile
-carries the bytes both ways, and your laptop proves they match by SHA-256.
+A Claude reviewer in a fresh Daytona sandbox rejects an unsafe, uncommitted
+file on your laptop. You fix it. The same reviewer approves it live. A split
+terminal shows the laptop action beside Relayfile's real filesystem events.
 
 ```text
 LAPTOP                         RELAYFILE                   SANDBOX
@@ -18,7 +18,7 @@ Requires Node.js 20+ and Claude credentials.
 git clone https://github.com/AgentWorkforce/relayfile-live-review.git
 cd relayfile-live-review
 ./demo setup     # one Agent Relay login, then connect Claude
-./demo           # complete end-to-end proof
+./demo           # complete split-screen proof
 ```
 
 ## Demo it live
@@ -29,15 +29,16 @@ Run backstage before presenting:
 ./demo prep
 ```
 
-After `READY`, open two terminals:
+After `READY`, open the split-screen terminal:
 
 ```text
-terminal 1: ./demo show     # short reveal
-terminal 2: ./demo watch    # optional view inside the sandbox
+./demo split
 ```
 
-One Enter press reveals the rejection, sends the local fix, and shows the
-approval. Cleanup is automatic; use `./demo clean` if you stop after prep.
+The left pane is the uncommitted laptop file. The right pane verifies the live
+Daytona node and runs a real Relayfile WebSocket listener. One Enter press
+changes the local file; both panes react. Cleanup is automatic. Use
+`./demo clean` if you stop after prep.
 
 ## The proof
 
