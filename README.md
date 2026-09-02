@@ -1,11 +1,11 @@
 # Review the live file. There is no PR yet.
 
-A Claude reviewer in a fresh Daytona sandbox rejects an unsafe, uncommitted
+A Claude reviewer in a fresh cloud sandbox rejects an unsafe, uncommitted
 file on your laptop. You fix it. The same reviewer approves it live. Relayfile
 carries the bytes both ways, and your laptop proves they match by SHA-256.
 
 ```text
-LAPTOP                         RELAYFILE                   DAYTONA
+LAPTOP                         RELAYFILE                   SANDBOX
 ?? refund.js  ───────────────> live workspace ──────────> REQUEST_CHANGES
 fixed bytes   ───────────────> live workspace ──────────> APPROVED
 ```
@@ -33,7 +33,7 @@ After `READY`, open two terminals:
 
 ```text
 terminal 1: ./demo show     # short reveal
-terminal 2: ./demo watch    # optional view inside Daytona
+terminal 2: ./demo watch    # optional view inside the sandbox
 ```
 
 One Enter press reveals the rejection, sends the local fix, and shows the
@@ -51,6 +51,7 @@ upload + polling service. The files behind the demo are [the unsafe code](exampl
 [the reviewer prompt](prompts/reviewer.md), [the launcher](demo), and
 [the orchestration](lib/run.mjs).
 
-Today this uses Daytona, not E2B. Read-only is a reviewer instruction, not an
-enforced permission. Displayed timing is observed end-to-end reaction time,
-not a universal latency guarantee.
+Daytona is the default. Where E2B sandbox capability is enabled, select it with
+`RELAYFILE_DEMO_SANDBOX_PROVIDER=e2b ./demo`. Read-only is a reviewer
+instruction, not an enforced permission. Displayed timing is observed
+end-to-end reaction time, not a universal latency guarantee.
