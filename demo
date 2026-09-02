@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+AR_VERSION=11.10.1
+RF_VERSION=0.10.52
+ROOT="$(cd "$(dirname "$0")" && pwd)"
+ACTION="${1:-present}"
+
+if [[ "$ACTION" == "setup" ]]; then
+  npx --yes "agent-relay@$AR_VERSION" cloud whoami >/dev/null 2>&1 || \
+    npx --yes "agent-relay@$AR_VERSION" cloud login
+  npx --yes "agent-relay@$AR_VERSION" cloud connect claude
+  echo "Ready. Run: ./demo"
+  exit 0
+fi
+
+case "$ACTION" in
+  present|run|doctor) ;;
+  *) echo "Usage: ./demo [setup|present|run|doctor]" >&2; exit 2 ;;
+esac
+
+if [[ "${RELAYFILE_DEMO_READY:-}" != 1 ]]; then
+  exec env RELAYFILE_DEMO_READY=1 npm_config_loglevel=error npm exec --yes \
+    --package="agent-relay@$AR_VERSION" \
+    --package="relayfile@$RF_VERSION" \
+    --package="@relayfile/sdk@$RF_VERSION" \
+    --package="@agent-relay/cloud@$AR_VERSION" \
+    -- bash "$0" "$ACTION"
+fi
+
+if [[ "$ACTION" == "doctor" ]]; then
+  agent-relay cloud whoami
+  relayfile workspace current --verbose
+  echo "Agent Relay $(agent-relay --version | tail -1)"
+  echo "Relayfile $(relayfile --version 2>/dev/null | tail -1 || true)"
+  exit 0
+fi
+
+BIN_DIR="$(dirname "$(command -v relayfile)")"
+AR_BIN_DIR="$(dirname "$(command -v agent-relay)")"
+export RELAYFILE_SDK_ENTRY="$BIN_DIR/../@relayfile/sdk/dist/index.js"
+export AGENT_RELAY_CLOUD_ENTRY="$AR_BIN_DIR/../@agent-relay/cloud/dist/index.js"
+
+if [[ "$ACTION" == "present" ]]; then
+  exec node "$ROOT/lib/run.mjs" --present
+else
+  exec node "$ROOT/lib/run.mjs"
+fi
