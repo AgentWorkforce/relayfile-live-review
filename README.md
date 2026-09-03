@@ -1,58 +1,55 @@
-# Review the live file. There is no PR yet.
+# Edit here. Watch it appear in Daytona.
 
-A Claude reviewer in a fresh Daytona sandbox rejects an unsafe, uncommitted
-file on your laptop. You fix it. The same reviewer approves it live. A split
-terminal shows the laptop action beside Relayfile's real filesystem events.
+Relayfile keeps one ordinary file live across two machines. The demo opens a
+split terminal, SSHes into a fresh Daytona sandbox, and tails the mounted file.
+Then it edits the laptop copy:
 
 ```text
-LAPTOP                         RELAYFILE                   SANDBOX
-?? refund.js  ───────────────> live workspace ──────────> REQUEST_CHANGES
-fixed bytes   ───────────────> live workspace ──────────> APPROVED
+LAPTOP                              DAYTONA SANDBOX
+$ cat shared/launch.txt             $ daytona ssh relayfile-live-…
+launch: waiting                     $ tail -F …/launch.txt
+                                    launch: waiting
+$ printf 'launch: now\n' > …
+                                    launch: now
 ```
 
-## Try it
+That last line is the proof: the Daytona filesystem changed while `tail -F`
+was already running. There is no Git commit, push, clone, or PR.
 
-Requires Node.js 20+ and Claude credentials.
+## Run it
+
+Requires Node.js 20+, `tmux`, the Daytona CLI, and Claude credentials. Sign in
+to the Daytona CLI once so the demo can show the real SSH session.
 
 ```bash
 git clone https://github.com/AgentWorkforce/relayfile-live-review.git
 cd relayfile-live-review
-./demo setup     # one Agent Relay login, then connect Claude
-./demo           # complete split-screen proof
+daytona login
+./demo setup
+./demo
 ```
 
-## Demo it live
+`./demo setup` uses the Agent Relay Cloud login and connects Claude. It does
+not require a second Relayfile login.
 
-Run backstage before presenting:
+## Present it without waiting
+
+Provision the sandbox backstage:
 
 ```bash
 ./demo prep
 ```
 
-After `READY`, open the split-screen terminal:
+After `READY`, run the visible proof:
 
-```text
-./demo split
+```bash
+./demo tail
 ```
 
-The left pane is the uncommitted laptop file. The right pane verifies the live
-Daytona node and runs a real Relayfile WebSocket listener. One Enter press
-changes the local file; both panes react. Cleanup is automatic. Use
-`./demo clean` if you stop after prep.
+The right pane runs a real `daytona ssh` followed by a real `tail -F`. The left
+pane pre-types the local `printf` command; press Enter once to execute it.
+Cleanup is automatic when running `./demo`; after a standalone prep/tail run,
+use `./demo clean`.
 
-## The proof
-
-- Different machine, fresh sandbox, scoped Relayfile mount.
-- Exact uncommitted bytes verified in both directions.
-- Same reviewer reacts to the changed file.
-- Git HEAD never moves: no commit, push, clone, or PR.
-
-Without Relayfile, this needs a Git round trip, shared storage, or a custom
-upload + polling service. The files behind the demo are [the unsafe code](example/refund.template.js),
-[the reviewer prompt](prompts/reviewer.md), [the launcher](demo), and
-[the orchestration](lib/run.mjs).
-
-Daytona is the default. Where E2B sandbox capability is enabled, select it with
-`RELAYFILE_DEMO_SANDBOX_PROVIDER=e2b ./demo`. Read-only is a reviewer
-instruction, not an enforced permission. Displayed timing is observed
-end-to-end reaction time, not a universal latency guarantee.
+The older agent-review proof remains available as `./demo split`. Daytona is
+the default sandbox provider; the direct SSH-tail proof is Daytona-specific.

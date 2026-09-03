@@ -15,8 +15,8 @@ if [[ "$ACTION" == "setup" ]]; then
 fi
 
 case "$ACTION" in
-  run|prep|show|events|split|watch|clean|doctor) ;;
-  *) echo "Usage: ./demo [setup|prep|show|events|split|watch|run|clean|doctor]" >&2; exit 2 ;;
+  run|prep|tail|show|events|split|watch|clean|doctor) ;;
+  *) echo "Usage: ./demo [setup|prep|tail|show|events|split|watch|run|clean|doctor]" >&2; exit 2 ;;
 esac
 
 if [[ "${RELAYFILE_DEMO_READY:-}" != 1 ]]; then
