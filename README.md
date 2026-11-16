@@ -1,8 +1,6 @@
 # Edit here. Watch it appear in Daytona.
 
-Relayfile keeps one ordinary file live across two machines. The demo opens a
-split terminal, SSHes into a fresh Daytona sandbox, and tails the mounted file.
-Then it edits the laptop copy:
+A focused demonstration of live review through Relayfile. It shows how changes and review feedback can reach agents as they happen.
 
 ```text
 LAPTOP                              DAYTONA SANDBOX
